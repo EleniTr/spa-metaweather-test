@@ -7,7 +7,7 @@ function isAnagram($first, $second) {
     $first=strtolower($first);
     $second=strtolower($second);
     
-    $second_array = str_split($second);
+    $second_array = str_split($second); //convert to array for iteration
     
   	foreach ($second_array as $char){
     if(strpos($first, $char) !== false){
