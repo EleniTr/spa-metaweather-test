@@ -2,6 +2,7 @@
 // For example: `Listen` is an anagram of `Silent`
 
 
+
 function isAnagram($first, $second) {
   if(strlen($first) == strlen($second)){
     $first=strtolower($first);
@@ -10,17 +11,17 @@ function isAnagram($first, $second) {
     $second_array = str_split($second); //convert to array for iteration
     
   	foreach ($second_array as $char){
-    if(strpos($first, $char) !== false){
-     $flag = 'true';
-    }else{
-     $flag = 'true';
+      if(strpos($first, $char) !== false){
+        $flag = 'true';
+      }else{
+        $flag = 'false';
+        break;
+      }
     }
-    }
-   
   }else{
     $flag = 'false';
   }
-   return $flag;
+  return $flag;
 }
 
 echo isAnagram('Silent', 'Listen'); 
