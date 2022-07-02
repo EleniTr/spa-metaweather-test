@@ -1,150 +1,201 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from '@/components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <form role="search">
-      <input type="text" name="search" id="search" placeholder="Search" v-model="search" />
-      <button type="submit">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-          <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
-          <path
-            d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z" />
-        </svg>
-      </button>
-    </form>
-  </header>
-  <RouterView />
+  <main>
+    <div class="search-box">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+        <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+        <path
+          d="M168.3 499.2C116.1 435 0 279.4 0 192C0 85.96 85.96 0 192 0C298 0 384 85.96 384 192C384 279.4 267 435 215.7 499.2C203.4 514.5 180.6 514.5 168.3 499.2H168.3zM192 256C227.3 256 256 227.3 256 192C256 156.7 227.3 128 192 128C156.7 128 128 156.7 128 192C128 227.3 156.7 256 192 256z"
+        />
+      </svg>
+      <input
+        type="text"
+        class="search-bar"
+        placeholder="Search.."
+        v-model="query"
+        @keypress="fetchWeather"
+      />
+    </div>
+
+    <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
+      <div class="weather-box">
+        <div class="temp">{{ Math.round(weather.main.temp) }}°c</div>
+        <div class="weather">{{ weather.weather[0].main }}</div>
+      </div>
+      <div class="location-box">
+        <div class="location">
+          {{ weather.name }}, {{ weather.sys.country }}
+        </div>
+        <div class="date">{{ dateBuilder() }}</div>
+      </div>
+    </div>
+  </main>
 </template>
 
+<script>
+export default {
+  name: "app",
+  data() {
+    return {
+      api_key: "f43c0f61be57c48a29d21b34412541a2",
+      api_base: "https://api.openweathermap.org/data/2.5/",
+      query: "",
+      weather: {},
+    };
+  },
+  methods: {
+    fetchWeather(e) {
+      if (e.key == "Enter") {
+        fetch(
+          `${this.api_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`
+        )
+          .then((res) => {
+            return res.json();
+          })
+          .then(this.setResults);
+      }
+    },
+    setResults(results) {
+      this.weather = results;
+    },
+    dateBuilder() {
+      let d = new Date();
+      let months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      let days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      let day = days[d.getDay()];
+      let date = d.getDate();
+      let month = months[d.getMonth()];
+      let year = d.getFullYear();
+      return `${day} ${date} ${month} ${year}`;
+    },
+  },
+};
+</script>
+
 <style>
-@import '@/assets/base.css';
-
-
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 50px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-
-header form{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  height: 10vh;
+body {
+  font-family: "montserrat", sans-serif;
 }
-
-header svg{
-  width:30px;
-  height: 30px;
-}
-
-#search{
-  width:85%;
-  font-size: 25px;
-  padding-left: 20px;
-}
-
- header form button {
-  width: 100px;
-  background: azure;
-  }
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+#app {
+  background-size: cover;
+  background-position: bottom;
   transition: 0.4s;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+main {
+  min-height: 100vh;
+  padding: 25px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.25),
+    rgba(113, 172, 225, 0.75)
+  );
 }
-
-nav {
+.search-box {
   width: 100%;
-  font-size: 12px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+}
+.search-box .search-bar {
+  display: block;
+  width: 100%;
+  padding: 15px;
+
+  color: #313131;
+  font-size: 20px;
+  appearance: none;
+  border: none;
+  outline: none;
+  background: none;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 0px 16px 0px 16px;
+  transition: 0.4s;
+}
+
+.search-box .search-bar:focus {
+  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 16px 0px 16px 0px;
+}
+
+.location-box .location {
+  color: rgb(43, 1, 253);
+  font-size: 32px;
+  font-weight: 500;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 10px;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.location-box .date {
+  color: rgb(2, 81, 100);
+  font-size: 20px;
+  font-weight: 300;
+  font-style: italic;
+  text-align: center;
+  margin-top: 10px;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.search-box svg {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
 }
 
-nav a {
+.weather-box {
+  text-align: center;
+}
+
+.weather-box .temp {
   display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+  padding: 10px 25px;
+  color: #fff;
+  font-size: 102px;
+  font-weight: 900;
+  text-shadow: 3px 6px rgba(29, 103, 26, 0.25);
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  margin: 30px 0px;
+  box-shadow: 3px 6px rgba(29, 103, 26, 0.25);
 }
 
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-
-  body {
-    display: flex;
-  }
-
-  #app {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  header {
-    display: flex;
-    justify-content: center;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.weather-box .weather {
+  color: #000;
+  font-size: 18px;
 }
 
 @media (max-width: 993px) {
-  header form {
-    height: 4vh;
+  .weather-box .temp {
+    font-size: 72px;
   }
-    #search {
-      width: 65%;
-      font-size: 15px;
-      padding-left: 10px;
-    }
-    
-    header svg {
-      width: 20px;
-      height: 20px;
-    }
-    
-    
+  .location-box .location {
+    font-size: 25px;
+  }
 }
 </style>
